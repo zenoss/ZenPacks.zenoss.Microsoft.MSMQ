@@ -1,0 +1,7 @@
+*.swp
+*.pyc
+*.pyo
+
+ZenPacks.zenoss.Microsoft.MSMQ.egg-info/*
+build/*
+dist/*
