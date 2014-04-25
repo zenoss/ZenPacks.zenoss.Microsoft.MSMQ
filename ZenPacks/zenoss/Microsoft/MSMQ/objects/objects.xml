@@ -1,0 +1,160 @@
+<?xml version="1.0" ?>
+<objects>
+    <!-- ('', 'zport', 'dmd', 'Devices', 'Server', 'Microsoft', 'rrdTemplates', 'MSMQQueue') -->
+    <object class="RRDTemplate" id="/zport/dmd/Devices/Server/Microsoft/rrdTemplates/MSMQQueue" module="Products.ZenModel.RRDTemplate">
+        <property id="zendoc" type="string">
+            Per-queue monitoring of MSMQ queues.
+        </property>
+        <property id="description" mode="w" type="text">
+            Per-queue monitoring of MSMQ queues.
+        </property>
+        <property id="targetPythonClass" mode="w" type="string">
+            Products.ZenModel.Device
+        </property>
+        <tomanycont id="datasources">
+            <object class="PerfmonDataSource" id="messagesInQueue" module="ZenPacks.zenoss.Microsoft.Windows.datasources.PerfmonDataSource">
+                <property id="sourcetype" mode="w" select_variable="sourcetypes" type="selection">
+                    Windows Perfmon
+                </property>
+                <property id="enabled" mode="w" type="boolean">
+                    True
+                </property>
+                <property id="component" mode="w" type="string">
+                    ${here/id}
+                </property>
+                <property id="severity" mode="w" type="int">
+                    3
+                </property>
+                <property id="cycletime" mode="w" type="string">
+                    ${here/zWinPerfmonInterval}
+                </property>
+                <property id="plugin_classname" mode="w" type="string">
+                    ZenPacks.zenoss.Microsoft.Windows.datasources.PerfmonDataSource.PerfmonDataSourcePlugin
+                </property>
+                <property id="counter" type="string">
+                    \Messages in Queue
+                </property>
+                <tomanycont id="datapoints">
+                    <object class="RRDDataPoint" id="messagesInQueue" module="Products.ZenModel.RRDDataPoint">
+                        <property id="rrdtype" mode="w" select_variable="rrdtypes" type="selection">
+                            GAUGE
+                        </property>
+                        <property id="isrow" mode="w" type="boolean">
+                            True
+                        </property>
+                    </object>
+                </tomanycont>
+            </object>
+        </tomanycont>
+        <tomanycont id="thresholds">
+            <object class="MinMaxThreshold" id="high queue" module="Products.ZenModel.MinMaxThreshold">
+                <property id="zendoc" type="string">
+                    Default maximum threshold of 10,000 messages for all discovered queues. Can be overridden for individual queues.
+                </property>
+                <property id="eventClass" mode="w" type="string">
+                    /Perf/MSMQ
+                </property>
+                <property id="severity" mode="w" type="int">
+                    3
+                </property>
+                <property id="dsnames" label="DataPoints" mode="w" type="lines">
+                    ['messagesInQueue_messagesInQueue']
+                </property>
+                <property id="enabled" label="Enabled" mode="w" type="boolean">
+                    True
+                </property>
+                <property id="maxval" mode="w" type="string">
+                    here.getMessagesInQueueThreshold()
+                </property>
+                <property id="escalateCount" mode="w" type="int">
+                    0
+                </property>
+            </object>
+        </tomanycont>
+        <tomanycont id="graphDefs">
+            <object class="GraphDefinition" id="Messages in Queue" module="Products.ZenModel.GraphDefinition">
+                <property id="height" mode="w" type="int">
+                    100
+                </property>
+                <property id="width" mode="w" type="int">
+                    500
+                </property>
+                <property id="units" mode="w" type="string">
+                    msgs
+                </property>
+                <property id="log" mode="w" type="boolean">
+                    False
+                </property>
+                <property id="base" mode="w" type="boolean">
+                    False
+                </property>
+                <property id="miny" mode="w" type="int">
+                    0
+                </property>
+                <property id="maxy" mode="w" type="int">
+                    -1
+                </property>
+                <property id="hasSummary" mode="w" type="boolean">
+                    True
+                </property>
+                <property id="sequence" mode="w" type="long">
+                    0
+                </property>
+                <tomanycont id="graphPoints">
+                    <object class="ThresholdGraphPoint" id="high queue" module="Products.ZenModel.ThresholdGraphPoint">
+                        <property id="sequence" mode="w" type="long">
+                            0
+                        </property>
+                        <property id="threshId" mode="w" type="string">
+                            high queue
+                        </property>
+                        <property id="legend" mode="w" type="string">
+                            ${graphPoint/id}
+                        </property>
+                    </object>
+                    <object class="DataPointGraphPoint" id="messagesInQueue" module="Products.ZenModel.DataPointGraphPoint">
+                        <property id="sequence" mode="w" type="long">
+                            1
+                        </property>
+                        <property id="lineType" mode="w" select_variable="lineTypes" type="selection">
+                            AREA
+                        </property>
+                        <property id="lineWidth" mode="w" type="long">
+                            1
+                        </property>
+                        <property id="stacked" mode="w" type="boolean">
+                            False
+                        </property>
+                        <property id="format" mode="w" type="string">
+                            %5.2lf%s
+                        </property>
+                        <property id="legend" mode="w" type="string">
+                            Queued
+                        </property>
+                        <property id="limit" mode="w" type="long">
+                            -1
+                        </property>
+                        <property id="dpName" mode="w" type="string">
+                            messagesInQueue_messagesInQueue
+                        </property>
+                        <property id="cFunc" mode="w" type="string">
+                            AVERAGE
+                        </property>
+                    </object>
+                </tomanycont>
+            </object>
+        </tomanycont>
+    </object>
+    <!-- ('', 'zport', 'dmd', 'Events', 'Perf', 'MSMQ') -->
+    <object class="EventClass" id="/zport/dmd/Events/Perf/MSMQ" module="Products.ZenEvents.EventClass">
+        <property id="zendoc" type="string">
+            Destination event class for events related to the number of messages in an MSMQ queue.
+        </property>
+    </object>
+    <!-- ('', 'zport', 'dmd', 'Events', 'Status', 'MSMQ') -->
+    <object class="EventClass" id="/zport/dmd/Events/Status/MSMQ" module="Products.ZenEvents.EventClass">
+        <property id="zendoc" type="string">
+            Destination event class for events related to MSMQ availability.
+        </property>
+    </object>
+</objects>
