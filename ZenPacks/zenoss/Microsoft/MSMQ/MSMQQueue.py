@@ -118,10 +118,4 @@ class MSMQQueue(DeviceComponent, ManagedEntity):
         return m is None and "unknown" or m
 
 
-    def getIconPath(self):
-        '''
-        Return the path to an icon for this component.
-        '''
-        return '/++resource++microsoftmq/img/MSMQQueue.png'
-
 InitializeClass(MSMQQueue)
