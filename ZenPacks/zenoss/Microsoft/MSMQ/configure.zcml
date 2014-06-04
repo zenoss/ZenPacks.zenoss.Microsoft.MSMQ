@@ -2,7 +2,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:zcml="http://namespaces.zope.org/zcml"
     >
 
     <!-- Provide info for the queue details screen. -->
@@ -10,18 +9,6 @@
         for=".MSMQQueue.MSMQQueue"
         provides=".interfaces.IMSMQQueueInfo"
         />
-
-    <!-- Impact -->
-    <configure zcml:condition="installed ZenPacks.zenoss.Impact">
-        <include package="ZenPacks.zenoss.Impact" file="meta.zcml"/>
-
-        <subscriber
-            provides="ZenPacks.zenoss.Impact.impactd.interfaces.IRelationshipDataProvider"
-            for=".MSMQQueue.MSMQQueue"
-            factory=".impact.MSMQQueueRelationsProvider"
-            />
-
-    </configure>
 
     <!-- Define a place for our zenpack to register javascript. -->
     <browser:resourceDirectory
