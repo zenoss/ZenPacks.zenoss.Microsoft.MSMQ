@@ -1,0 +1,148 @@
+{{ZenPack
+
+|Summary=Monitoring for Microsoft Message Queue (MSMQ).
+
+|Organization=Zenoss, Inc.
+
+|License=GNU General Public License, Version 2
+
+|ZenPack name=ZenPacks.zenoss.Microsoft.MSMQ
+
+|Source URI=https://github.com/zenoss/ZenPacks.zenoss.Microsoft.MSMQ.git
+
+|Releases={{Release
+
+|Version=1.2.1
+
+|Tag=1.2.1
+
+|Release date=
+
+|Compatible with=Zenoss Core 3.2.x, Zenoss Core 4.2.x, Zenoss Resource Manager 4.2.x
+
+|Requires=Microsoft Windows,
+
+}}
+
+|Devices=
+
+|Applications={{Application
+
+|Product Name=Microsoft Message Queue (MSMQ)
+
+}}
+
+|Integrations=
+
+|DataAudits=
+
+|Binaries=
+
+|Flavor=core
+
+}}
+
+The <span class="zenpack">ZenPacks.zenoss.Microsoft.MSMQ</span> ZenPack uses WinRM to automatically discover Microsoft Message Queue (MSMQ) queues, and monitor the number of messages queued in each.
+
+The following description of Microsoft Message Queue (MSMQ) can be found on Microsoft's MSMQ product page.
+
+<span class="q">"Microsoft Message Queue (MSMQ) technology enables applications running at different times to communicate across heterogeneous networks and systems that may be temporarily offline. MSMQ provides guaranteed message delivery, efficient routing, security, and priority-based messaging. It can be used to implement solutions for both asynchronous and synchronous messaging scenarios."</span>
+
+== Prerequisites ==
+
+{| class="wikitable"
+
+!width="50%"|Prerequisite
+
+!width="50%"|Restriction
+
+|-
+
+|Product
+
+|<span class="ph">Zenoss platform</span> 4.x
+
+|-
+
+|Required ZenPacks
+
+|ZenPacks.zenoss.Microsoft.Windows
+
+|}
+
+== Configuration ==
+
+To monitor MSMQ queues, set up proper credentials so that <span class="ph">Zenoss platform</span> can remotely monitor the target Windows servers.
+
+This ZenPack supports two approaches to enable MSMQ queue monitoring, as detailed in the next sections.
+
+=== Automatically Monitor Queues on All Servers ===
+
+The easiest way to configure <span class="ph">Zenoss platform</span> to monitor your queues is to enable queue discovery for the entire <span class="ph uicontrol guilabel">/Server/Microsoft/Windows</span> device class. Within 12 hours <span class="ph">Zenoss platform</span> will have automatically discovered all of the queues available to be monitored and begun monitoring how many messages are in each queue and creating threshold events if they exceed 10,000 messages.
+
+Perform the following steps to enable queue discovery for all Windows servers.
+
+# Navigate to the <span class="ph uicontrol guilabel">/Server/Microsoft/Windows</span> device class.
+
+# Click '''Details'''.
+
+# Select Modeler Plugins from the left panel.
+
+# Click <span class="ph uicontrol guibutton">Add Fields</span>.
+
+# Drag <span class="ph menucascade"><span class="ph uicontrol guimenuitem">zenoss.winrm.MSMQQueueMap</span></span> from the available fields to the list of plugins.
+
+# Click <span class="ph uicontrol guibutton">Save</span>.
+
+# Wait about 12 hours for all Windows servers to be remodeled.
+
+=== Monitor Queues on Specific Servers ===
+
+If you do not want <span class="ph">Zenoss platform</span> automatically monitoring queues on all of your Windows servers and would rather point it to specific servers you can do so by performing the following steps on each server you're interested in.
+
+# Navigate to the device.
+
+# Select Modeler Plugins from the left panel.
+
+# Click <span class="ph uicontrol guibutton">Add Fields</span>.
+
+# Drag <span class="ph menucascade"><span class="ph uicontrol guimenuitem">zenoss.winrm.MSMQQueueMap</span></span> from the available fields to the list of plugins.
+
+# Click <span class="ph uicontrol guibutton">Save</span>.
+
+# Select Model Device from the Action menu.
+
+=== Fine-Tuning Queue Monitoring ===
+
+By default <span class="ph">Zenoss platform</span> will automatically monitor all queues on a server that is running the MSMQ services. Each queue will also have a default 10,000 maximum threshold applied to it. This means that an event will be created when the number of messages in a single queue exceeds 10,000.
+
+<span class="notetitle">Note:</span>
+
+By default queues with names beginning with '''tcp''' will not be discovered. You can change this behavior with the <span class="keyword property">zMSMQIgnoreQueues</span> property. This property is a regular expression and any queues that match it will not be discovered.
+
+You can change the maximum messages threshold on a per-queue basis by changing the <span class="ph uicontrol guilabel">Queues Messages Threshold</span> property. Leaving this value blank will have the result of no threshold being applied.
+
+== Daemons ==
+
+{| class="wikitable"
+
+!width="50%"|Type
+
+!width="50%"|Name
+
+|-
+
+|Modeler
+
+|<span class="keyword cmdname">zenmodeler</span>
+
+|-
+
+|Performance Collector
+
+|<span class="keyword cmdname">zenpython</span>
+
+|}
+
+{{ZenPackFooter}}
+
