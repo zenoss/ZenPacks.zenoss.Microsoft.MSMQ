@@ -1,19 +1,23 @@
 ##############################################################################
 #
-# Copyright (C) Zenoss, Inc. 2009-2014, all rights reserved.
+# Copyright (C) Zenoss, Inc. 2009-2017, all rights reserved.
 #
 # This content is made available according to terms specified in
 # License.zenoss under the directory where your Zenoss product is installed.
 #
 ##############################################################################
 
-
+import collections
 import re
+
 from ZenPacks.zenoss.Microsoft.Windows.modeler.WinRMPlugin import WinRMPlugin
 
 
+Queue = collections.namedtuple('Queue', ['Name'])
+
+
 class MSMQQueueMap(WinRMPlugin):
-    ''' Modeler plugin to get list of Microsoft Message Queues '''
+    """Modeler plugin to get list of Microsoft Message Queues."""
 
     relname = "microsoftmq"
     modname = "ZenPacks.zenoss.Microsoft.MSMQ.MSMQQueue"
@@ -26,12 +30,25 @@ class MSMQQueueMap(WinRMPlugin):
         'MSMQQueue': 'Select Name From Win32_PerfFormattedData_MSMQ_MSMQQueue',
     }
 
+    powershell_commands = {
+        'CustomQueues': 'Get-MsmqQueue | Select QueueName',
+    }
+
+    def _convertCustomQueues(self, customQueues):
+        """Convert custom queues according to MSMQQueue output format."""
+        return [Queue(Name=name) for name in customQueues.stdout[2:]]
+
     def process(self, device, results, log):
         log.info('Collecting MSMQ queues for device %s', device.id)
 
         ignore = getattr(device, 'zMSMQIgnoreQueues', None)
         if ignore:
             ignore = re.compile(ignore).search
+
+        customQueues = results.get('CustomQueues')
+        if customQueues:
+            results['MSMQQueue'].extend(
+                self._convertCustomQueues(customQueues))
 
         rm = self.relMap()
         for queue in results['MSMQQueue']:
