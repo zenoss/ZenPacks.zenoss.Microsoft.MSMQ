@@ -144,5 +144,9 @@ You can change the maximum messages threshold on a per-queue basis by changing t
 
 |}
 
-{{ZenPackFooter}}
+== Changes ==
 
+;1.3.1
+* Model queues that aren't in use or haven't passed messages yet. (ZPS-1690)
+
+{{ZenPackFooter}}
