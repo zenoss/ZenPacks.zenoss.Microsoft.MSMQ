@@ -45,6 +45,9 @@ class MSMQQueueMap(WinRMPlugin):
         if ignore:
             ignore = re.compile(ignore).search
 
+        if 'MSMQQueue' not in results:
+            results['MSMQQueue'] = []
+
         customQueues = results.get('CustomQueues')
         if customQueues:
             results['MSMQQueue'].extend(
