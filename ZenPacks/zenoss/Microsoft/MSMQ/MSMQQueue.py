@@ -57,12 +57,6 @@ class MSMQQueue(DeviceComponent, ManagedEntity):
                 'action': 'objTemplates',
                 'permissions': (ZEN_CHANGE_SETTINGS,),
             },
-            {
-                'id': 'viewHistory',
-                'name': 'Modifications',
-                'action': 'viewHistory',
-                'permissions': (ZEN_VIEW,),
-            },
         ),
     },)
 
