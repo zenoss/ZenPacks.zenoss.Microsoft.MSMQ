@@ -38,20 +38,22 @@ class TestMSMQQueueMap(BaseTestCase):
         self.assertEquals(
             res.maps[1].id, 'win-tl4mu7a971n_private_private_queue_1')
 
-        results['CustomQueues'] = Mock(
+        results['AdditionalQueues'] = Mock(
             exit_code=0,
             stderr=[],
             stdout=[
                 'QueueName',
                 '---------',
-                'private$\\private_queue_2',
-                'public_queue_2'])
+                'FormatName:DIRECT=OS:win-tl4mu7a971n\\private$\\private_queue_1',
+                'WIN-TL4MU7A971N\\public_queue_1',
+                'WIN-TL4MU7A971N\\public_queue_2'])
 
         res = queue_plugin.process(device, results, Mock())
 
-        self.assertEquals(len(res.maps), 4)
-        self.assertEquals(res.maps[2].id, 'private_private_queue_2')
-        self.assertEquals(res.maps[3].id, 'public_queue_2')
+        self.assertEquals(len(res.maps), 3)
+        self.assertEquals(res.maps[0].id, 'win-tl4mu7a971n_public_queue_1')
+        self.assertEquals(res.maps[1].id, 'win-tl4mu7a971n_private_private_queue_1')
+        self.assertEquals(res.maps[2].id, 'win-tl4mu7a971n_public_queue_2')
 
 
 def test_suite():
