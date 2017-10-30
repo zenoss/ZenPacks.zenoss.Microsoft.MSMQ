@@ -26,56 +26,36 @@ class MSMQQueueMap(WinRMPlugin):
         'zMSMQIgnoreQueues',
     )
 
-    queries = {
-        'MSMQQueue': 'Select Name From Win32_PerfFormattedData_MSMQ_MSMQQueue',
-    }
-
     powershell_commands = {
-        'AdditionalQueues': 'Get-MsmqQueue | Select Path',
+        'MSMQQueue': 'Get-MsmqQueue | Select Path',
     }
-
-    def _convertAdditionalQueues(self, additionalQueues):
-        """Convert additional queues according to MSMQQueue output format."""
-        return [
-            Queue(Name=path.lower().replace('formatname:direct=os:', ''))
-            for path in additionalQueues.stdout[2:]]
 
     def process(self, device, results, log):
-        log.info('Collecting MSMQ queues for device %s', device.id)
+        log.info('Collecting MSMQ components for device %s', device.id)
 
         ignore = getattr(device, 'zMSMQIgnoreQueues', None)
         if ignore:
             ignore = re.compile(ignore).search
 
-        if 'MSMQQueue' not in results:
-            results['MSMQQueue'] = []
-
-        additionalQueues = results.get('AdditionalQueues')
-        if additionalQueues:
-            results['MSMQQueue'].extend(
-                self._convertAdditionalQueues(additionalQueues))
+        output = results.get('MSMQQueue')
+        if output and hasattr(output, 'stdout'):
+            queue_names = [
+                path.lower().replace('formatname:direct=os:', '')
+                for path in output.stdout[2:]]
+        else:
+            queue_names = []
 
         rm = self.relMap()
-        queues_names = set()
-        for queue in results['MSMQQueue']:
-            if not getattr(queue, 'Name', None):
-                continue
-
-            # Don't add duplicates to the model.
-            if queue.Name in queues_names:
-                continue
-            else:
-                queues_names.add(queue.Name)
-
+        for q_name in queue_names:
             om = self.objectMap()
 
             # Skip queue names that match zMSMQIgnoreQueues.
-            if ignore and ignore(queue.Name):
+            if ignore and ignore(q_name):
                 continue
 
-            om.id = self.prepId(queue.Name.replace('$', ''))
-            om.queueName = queue.Name
-            om.perfmonInstance = '\MSMQ Queue(%s)' % queue.Name
+            om.id = self.prepId(q_name.replace('$', ''))
+            om.queueName = q_name
+            om.perfmonInstance = '\MSMQ Queue(%s)' % q_name
             rm.append(om)
 
         return rm
