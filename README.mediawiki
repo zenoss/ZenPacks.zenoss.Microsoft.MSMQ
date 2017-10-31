@@ -120,5 +120,14 @@ You can change the maximum messages threshold on a per-queue basis by changing t
 
 |}
 
-{{ZenPackFooter}}
+== Known Issues ==
 
+* No monitoring for MS Queues if Windows ZenPack 2.8.1 is installed, resolved in Windows ZenPack 2.8.2.
+
+== Changes ==
+
+;1.3.1
+* Model queues that aren't in use or haven't passed messages yet. (ZPS-1690)
+* Remove outdated Modifications view from MSMQQueue/Details panel. (ZPS-2366)
+
+{{ZenPackFooter}}
