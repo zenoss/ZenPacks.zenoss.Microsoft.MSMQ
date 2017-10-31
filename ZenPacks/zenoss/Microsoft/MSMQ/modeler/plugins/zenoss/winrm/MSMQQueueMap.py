@@ -7,13 +7,9 @@
 #
 ##############################################################################
 
-import collections
 import re
 
 from ZenPacks.zenoss.Microsoft.Windows.modeler.WinRMPlugin import WinRMPlugin
-
-
-Queue = collections.namedtuple('Queue', ['Name'])
 
 
 class MSMQQueueMap(WinRMPlugin):
@@ -27,8 +23,20 @@ class MSMQQueueMap(WinRMPlugin):
     )
 
     powershell_commands = {
-        'MSMQQueue': 'Get-MsmqQueue | Select Path',
+        'PersistentPrivateAndPublicQueues': 'Get-MsmqQueue | Select Path',
+        'OtherQueues': 'Get-WmiObject Win32_PerfFormattedData_msmq_MSMQQueue | Select Name',
     }
+
+    def _get_queue_names(self, results):
+        q_names = []
+        for q_output in results.itervalues():
+            if q_output and hasattr(q_output, 'stdout'):
+                for raw_q_name in q_output.stdout[2:]:
+                    q_name = raw_q_name.lower().replace(
+                        'formatname:direct=os:', '')
+                    if q_name not in q_names:
+                        q_names.append(q_name)
+        return q_names
 
     def process(self, device, results, log):
         log.info('Collecting MSMQ components for device %s', device.id)
@@ -37,16 +45,8 @@ class MSMQQueueMap(WinRMPlugin):
         if ignore:
             ignore = re.compile(ignore).search
 
-        output = results.get('MSMQQueue')
-        if output and hasattr(output, 'stdout'):
-            queue_names = [
-                path.lower().replace('formatname:direct=os:', '')
-                for path in output.stdout[2:]]
-        else:
-            queue_names = []
-
         rm = self.relMap()
-        for q_name in queue_names:
+        for q_name in self._get_queue_names(results):
             om = self.objectMap()
 
             # Skip queue names that match zMSMQIgnoreQueues.
