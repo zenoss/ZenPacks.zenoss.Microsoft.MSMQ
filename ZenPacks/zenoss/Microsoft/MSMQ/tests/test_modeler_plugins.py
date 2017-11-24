@@ -23,22 +23,56 @@ class TestMSMQQueueMap(BaseTestCase):
         device.zMSMQIgnoreQueues = False
 
         results = {
-            'MSMQQueue': Mock(
+            'Additional': Mock(
                 exit_code=0,
                 stderr=[],
                 stdout=[
-                    'QueueName',
-                    '---------',
-                    'FormatName:DIRECT=OS:win-tl4mu7a971n\\private$\\private_queue_1',
-                    'WIN-TL4MU7A971N\\public_queue_1',
-                    'WIN-TL4MU7A971N\\public_queue_2'])}
+                    u'Name',
+                    u'----',
+                    u'win-tl4mu7a971n\\public_queue_1',
+                    u'win-tl4mu7a971n\\private$\\private_queue_1',
+                    u'win-tl4mu7a971n\\private$\\notify_queue$',
+                    u'win-tl4mu7a971n\\private$\\order_queue$',
+                    u'win-tl4mu7a971n\\private$\\admin_queue$',
+                    u'Computer Queues']),
+            'SystemJournal': Mock(
+                exit_code=0,
+                stderr=[],
+                stdout=[
+                    u'Path',
+                    u'----',
+                    u'FormatName:DIRECT=OS:.\\SYSTEM$;JOURNAL']),
+            'SystemTransactionalDeadLetter': Mock(
+                exit_code=0,
+                stderr=[],
+                stdout=[
+                    u'Path',
+                    u'----',
+                    u'FormatName:DIRECT=OS:.\\SYSTEM$;DEADXACT']),
+            'SystemDeadLetter': Mock(
+                exit_code=0,
+                stderr=[],
+                stdout=[
+                    u'Path',
+                    u'----',
+                    u'FormatName:DIRECT=OS:.\\SYSTEM$;DEADLETTER']),
+            'PrivateAndPublic': Mock(
+                exit_code=0,
+                stderr=[],
+                stdout=[
+                    u'Path',
+                    u'----',
+                    u'FormatName:DIRECT=OS:win-tl4mu7a971n\\private$\\private_queue_1',
+                    u'WIN-TL4MU7A971N\\public_queue_1'])}
 
         res = queue_plugin.process(device, results, Mock())
 
-        self.assertEquals(len(res.maps), 3)
-        self.assertEquals(res.maps[0].id, 'win-tl4mu7a971n_private_private_queue_1')
-        self.assertEquals(res.maps[1].id, 'win-tl4mu7a971n_public_queue_1')
-        self.assertEquals(res.maps[2].id, 'win-tl4mu7a971n_public_queue_2')
+        self.assertEquals(len(res.maps), 9)
+        self.assertEquals(res.maps[0].id, 'system_deadletter')
+        self.assertEquals(res.maps[2].id, 'win-tl4mu7a971n_private_private_queue_1')
+        self.assertEquals(res.maps[4].id, 'win-tl4mu7a971n_private_notify_queue')
+        self.assertEquals(res.maps[6].id, 'win-tl4mu7a971n_private_admin_queue')
+        self.assertEquals(res.maps[8].id, 'system_deadxact')
 
 
 def test_suite():
