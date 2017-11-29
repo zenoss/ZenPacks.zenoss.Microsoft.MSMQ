@@ -37,10 +37,11 @@ class ZenPack(ZenPackBase):
         self.rebuildRelations(app.zport.dmd)
 
     def remove(self, app, leaveObjects=False):
-        Device._relations = tuple(
-            [x for x in Device._relations if x[0] != 'microsoftmq'])
-        self.rebuildRelations(app.zport.dmd)
-        ZenPackBase.remove(self, app, leaveObjects)
+        if not leaveObjects:
+            Device._relations = tuple(
+                [x for x in Device._relations if x[0] != 'microsoftmq'])
+            self.rebuildRelations(app.zport.dmd)
+        ZenPackBase.remove(self, app, leaveObjects=leaveObjects)
 
     def rebuildRelations(self, dmd):
         for d in dmd.Devices.getSubDevices():
