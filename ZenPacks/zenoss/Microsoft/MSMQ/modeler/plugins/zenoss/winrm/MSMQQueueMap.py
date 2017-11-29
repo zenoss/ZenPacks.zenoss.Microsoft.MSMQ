@@ -23,8 +23,11 @@ class MSMQQueueMap(WinRMPlugin):
     )
 
     powershell_commands = {
-        'PersistentPrivateAndPublicQueues': 'Get-MsmqQueue | Select Path',
-        'OtherQueues': 'Get-WmiObject Win32_PerfFormattedData_msmq_MSMQQueue | Select Name',
+        'PrivateAndPublic': 'Get-MsmqQueue -QueueType PrivateAndPublic | Select Path',
+        'SystemDeadLetter': 'Get-MsmqQueue -QueueType SystemDeadLetter | Select Path',
+        'SystemJournal': 'Get-MsmqQueue -QueueType SystemJournal | Select Path',
+        'SystemTransactionalDeadLetter': 'Get-MsmqQueue -QueueType SystemTransactionalDeadLetter | Select Path',
+        'Additional': 'Get-WmiObject Win32_PerfFormattedData_msmq_MSMQQueue | Select Name',
     }
 
     def _get_queue_names(self, results):
@@ -33,7 +36,7 @@ class MSMQQueueMap(WinRMPlugin):
             if q_output and hasattr(q_output, 'stdout'):
                 for raw_q_name in q_output.stdout[2:]:
                     q_name = raw_q_name.lower().replace(
-                        'formatname:direct=os:', '')
+                        'formatname:direct=os:', '').strip('._')
                     if q_name not in q_names:
                         q_names.append(q_name)
         return q_names
