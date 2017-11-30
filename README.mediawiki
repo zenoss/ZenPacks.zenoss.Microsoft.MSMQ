@@ -128,10 +128,12 @@ You can change the maximum messages threshold on a per-queue basis by changing t
 
 ;1.3.2
 * Add support of system queues. (ZPS-2605)
-* Ensure relations are preserved on upgrade (ZPS-2618)
+* Ensure relations are preserved on upgrade. (ZPS-2618)
+* Tested with Zenoss Resource Manager 6.0.1, Zenoss Resource Manager 5.3.3, Zenoss Resource Manager 4.2.5 RPS 743 and Service Impact 5.2.2.
 
 ;1.3.1
 * Model queues that aren't in use or haven't passed messages yet. (ZPS-1690)
 * Remove outdated Modifications view from MSMQQueue/Details panel. (ZPS-2366)
+* Tested with Zenoss Resource Manager 5.3.2 and Zenoss Resource Manager 4.2.5 RPS 743.
 
 {{ZenPackFooter}}
